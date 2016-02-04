@@ -34,6 +34,8 @@ eval (M (F (ws', rs), vs)) w (Box e)
       f w' = eval (M (F (ws', rs), vs)) w' e
       ws  = relatedTo w rs
 
+eval k w (Diamond e) = not (eval k w (Box (Not e)))
+
 eval (M (_, V vs)) w (Variable p) = elem w (lookUp p vs)
 
 eval k w (Not e) = not (eval k w e)
@@ -51,5 +53,5 @@ relatedTo (W w) (R []) = []
 relatedTo (W w) (R ((W w', W w''):ws)) 
   | w == w' = W w'' : relatedTo (W w) (R ws)
   | otherwise = relatedTo (W w) (R ws)
- 
+
  
