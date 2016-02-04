@@ -1,4 +1,4 @@
-# haskell-verifier
+# Haskell-Verifier
 
 A verifier for logical formulas.
 
@@ -17,4 +17,5 @@ A toy example given a model and a formula:
 False
 ```
 
-The reason why the above example is "False" is because there exists w3 such that (w4, w3) is in our set of relations and (M, w3) isn't in our set of valuations for p.
+The reason why the above example is "False" is because there exists w3 such that (w4, w3) is in our set of relations, 
+but (M, w3) isn't in our set of valuations for p.
