@@ -1,7 +1,6 @@
 import Data.Maybe
-import Data.String
 
-data World = W [Char] deriving Eq
+data World = W String deriving Eq
 
 data Relation = R (World, World)
 
@@ -34,8 +33,6 @@ eval k w (IfThen e1 e2)
   | eval k w e1 = eval k w e2
   | otherwise = True
 
-box' :: [Relation] -> World -> World  
--- TODO
 
       
 
