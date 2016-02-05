@@ -1,14 +1,14 @@
 import Data.Maybe
 
-data World = W [Char] deriving (Eq, Show)
+type World = [Char] 
 
-data Relations = R [(World, World)] deriving Show
+type Relations = [(World, World)] 
 
-data KripkeFrame = F ([World], Relations) deriving Show
+type Valuations = [(String, [World])] 
 
-data Valuations = V [(String, [World])] deriving Show
+type KripkeFrame = ([World], Relations) 
 
-data KripkeModel = M (KripkeFrame, Valuations) deriving Show
+type KripkeModel = (KripkeFrame, Valuations) 
 
 data Exp = Constant Bool 
          | Variable String 
@@ -28,15 +28,15 @@ eval _ _ (Constant True) = True
 
 eval _ _ (Constant False) = False
 
-eval (M (F (ws', rs), vs)) w (Box e) 
+eval (((ws', rs), vs)) w (Box e) 
   = and (map f ws)
     where
-      f w' = eval (M (F (ws', rs), vs)) w' e
+      f w' = eval (((ws', rs), vs)) w' e
       ws  = relatedTo w rs
 
 eval k w (Diamond e) = not (eval k w (Box (Not e)))
 
-eval (M (_, V vs)) w (Variable p) = elem w (lookUp p vs)
+eval ((_, vs)) w (Variable p) = elem w (lookUp p vs)
 
 eval k w (Not e) = not (eval k w e)
 
@@ -49,9 +49,9 @@ eval k w (IfThen e1 e2)
   | otherwise = True
 
 relatedTo :: World -> Relations -> [World] 
-relatedTo (W w) (R []) = [] 
-relatedTo (W w) (R ((W w', W w''):ws)) 
-  | w == w' = W w'' : relatedTo (W w) (R ws)
-  | otherwise = relatedTo (W w) (R ws)
+relatedTo w [] = [] 
+relatedTo w ((w', w''):ws) 
+  | w == w' = w'' : relatedTo w ws
+  | otherwise = relatedTo w ws
 
  

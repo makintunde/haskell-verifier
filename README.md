@@ -5,15 +5,16 @@ A verifier for logical formulas.
 # Usage
 A toy example given a model and a formula:
 ```
-> let relations = [(W "w2",W "w1"),(W "w3",W "w2"),(W "w4",W "w2"),(W "w4", W "w3"), (W "w3",W "w3")]
-> let worlds = [W "w1",W "w2",W "w3",W "w4"]
-> let valuations = V [("p", [W "w2", W "w4"]), ("q", [W "w2", W "w3", W "w4"])]
-> let kripkeFrame = F (worlds, R relations)
-> let kripkeModel = M (kripkeFrame, valuations)
+> let relations = [("w2", "w1"), ("w3", "w2"), ("w4", "w2"), ("w4", "w3"), ("w3", "w3")]
+> let worlds = ["w1", "w2", "w3", "w4"]
+> let valuations = [("p", ["w2", "w4"]), ("q", ["w2", "w3", "w4"])]
+> let kripkeFrame = (worlds, relations)
+> let kripkeModel = (kripkeFrame, valuations)
 > let exp = Box (Variable "p")
-> let world = W "w3"
+> let world = "w3"
 
 > eval kripkeModel world exp
+
 False
 ```
 
