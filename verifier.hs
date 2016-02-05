@@ -20,6 +20,42 @@ data Exp = Constant Bool
          | IfThen Exp Exp
          deriving Show
 
+relations = [("w2", "w1"), 
+             ("w3", "w2"), 
+             ("w4", "w2"), 
+             ("w4", "w3"), 
+             ("w3", "w3")]
+
+worlds = ["w1", "w2", "w3", "w4"]
+
+valuations = [("p", ["w2", "w4"]), 
+              ("q", ["w2", "w3", "w4"])]
+
+kripkeFrame = (worlds, relations)
+
+kripkeModel = (kripkeFrame, valuations)
+
+exp1 = Box (Variable "p")
+exp2 = Diamond (Variable "p")
+exp3 = IfThen 
+         (IfThen 
+           (Diamond (Variable "q"))
+           (Diamond (Not (Variable "p")))) 
+         (And 
+           (Not (Variable "p")) 
+           (Not (Variable "q"))) 
+exp4 = Box (Constant False)
+exp5 = Diamond (Constant False)
+exp6 = And (Box (Constant True)) (Box (Constant False))
+exp7 = Or (Diamond (Constant True)) (Diamond (Constant False))
+
+w1 = "w1"
+w2 = "w2"
+w3 = "w3"
+w4 = "w4"
+
+---------------------------------------------------------------------
+
 lookUp x xs = fromJust (lookup x xs)
 
 eval :: KripkeModel -> World -> Exp -> Bool
@@ -54,4 +90,12 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
- 
+test 
+  = eval kripkeModel w4 exp1 == False &&
+    eval kripkeModel w4 exp2 == True  &&
+    eval kripkeModel w3 exp1 == False &&
+    eval kripkeModel w3 exp3 == False &&
+    eval kripkeModel w2 exp4 == False &&
+    eval kripkeModel w2 exp5 == False &&
+    eval kripkeModel w1 exp6 == True  &&
+    eval kripkeModel w2 exp7 == True      
