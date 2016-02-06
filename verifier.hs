@@ -5,6 +5,8 @@ type World = [Char]
 
 type State = [Char]
 
+type States = [(State, [State])]
+
 type Relations = [(World, World)] 
 
 type Valuations = [(String, [World])] 
@@ -100,13 +102,15 @@ relatedTo w ((w', w''):ws)
   | otherwise = relatedTo w ws
 
 satEX e s 
-  = undefined
+  = nub [s' | (s', _) <- x] 
+    where 
+      x = sat e s
 satAF e s 
   = undefined
 satEU e1 e2 s 
   = undefined
 
-sat :: Exp -> [State] -> [State]
+sat :: Exp -> States -> States
 sat (Constant True) s = s
 sat (Constant False) s = []
 sat (Variable p) s = undefined --TODO
