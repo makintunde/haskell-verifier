@@ -5,8 +5,6 @@ type World = [Char]
 
 type State = [Char]
 
-type States = [(State, [State])]
-
 type Relations = [(World, World)] 
 
 type Valuations = [(String, [World])] 
@@ -101,32 +99,44 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
-satEX e s 
-  = nub [s' | (s', _) <- x] 
+satEX e s rs 
+  = nub [s' | (s', _) <- rs] 
     where 
       x = sat e s
-satAF e s 
+
+satAF' e s xs ys 
   = undefined
-satEU e1 e2 s 
+-- | xs == ys = ys
+-- | otherwise 
+--   = union ys [s' | (s', s'') <- ]
+
+satAF e s rs 
+  | x == y = y
+  | otherwise = satAF' e s x y
+    where
+      x = s
+      y = sat e s rs
+
+satEU e1 e2 s rs
   = undefined
 
-sat :: Exp -> States -> States
-sat (Constant True) s = s
-sat (Constant False) s = []
-sat (Variable p) s = undefined --TODO
-sat (Not e) s = (\\) s (sat e s)
-sat (And e1 e2) s = intersect (sat e1 s) (sat e2 s)
-sat (Or e1 e2) s = union (sat e1 s) (sat e2 s)
-sat (IfElse e1 e2) s = sat (Or (Not e1) e2) s
-sat (A (X e)) s = sat (Not (E (X (Not e)))) s
-sat (A (Until e1 e2)) s 
-  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s
-sat (E (F e)) s = sat (E (Until (Constant True) e)) s
-sat (E (G e)) s = sat (Not (A (F (Not e)))) s
-sat (A (G e)) s = sat (Not (E (F (Not e)))) s
-set (E (X e)) s = satEX e s
-set (A (F e)) s = satAF e s
-set (E (Until e1 e2)) s = satEU e1 e2 s
+sat :: Exp -> [State] -> Relations -> [State]
+sat (Constant True) s _ = s
+sat (Constant False) s _ = []
+sat (Variable p) s _ = undefined --TODO
+sat (Not e) s rs = (\\) s (sat e s rs)
+sat (And e1 e2) s rs = intersect (sat e1 s rs) (sat e2 s rs)
+sat (Or e1 e2) s rs = union (sat e1 s rs) (sat e2 s rs)
+sat (IfElse e1 e2) s rs = sat (Or (Not e1) e2) s rs
+sat (A (X e)) s rs = sat (Not (E (X (Not e)))) s rs
+sat (A (Until e1 e2)) s rs
+  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s rs
+sat (E (F e)) s rs = sat (E (Until (Constant True) e)) s rs
+sat (E (G e)) s rs = sat (Not (A (F (Not e)))) s rs
+sat (A (G e)) s rs = sat (Not (E (F (Not e)))) s rs
+sat (E (X e)) s rs = satEX e s rs
+sat (A (F e)) s rs = satAF e s rs
+sat (E (Until e1 e2)) s rs = satEU e1 e2 s rs
 
 ---------------------------------------------------------------------
 runTests 
