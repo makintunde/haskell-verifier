@@ -1,6 +1,9 @@
 import Data.Maybe
+import Data.List
 
 type World = [Char] 
+
+type State = [Char]
 
 type Relations = [(World, World)] 
 
@@ -17,8 +20,14 @@ data Exp = Constant Bool
          | Diamond Exp
          | And Exp Exp
          | Or Exp Exp
-         | IfThen Exp Exp
-         deriving Show
+         | IfElse Exp Exp
+         | Until Exp Exp 
+         | A Exp
+         | G Exp
+         | F Exp
+         | X Exp
+         | E Exp
+         deriving (Show, Eq)
 
 relations = [("w2", "w1"), 
              ("w3", "w2"), 
@@ -37,8 +46,8 @@ kripkeModel = (kripkeFrame, valuations)
 
 exp1 = Box (Variable "p")
 exp2 = Diamond (Variable "p")
-exp3 = IfThen 
-         (IfThen 
+exp3 = IfElse 
+         (IfElse 
            (Diamond (Variable "q"))
            (Diamond (Not (Variable "p")))) 
          (And 
@@ -80,7 +89,7 @@ eval k w (And e1 e2) = (eval k w e1) && (eval k w e2)
 
 eval k w (Or e1 e2) = (eval k w e1) || (eval k w e2)
 
-eval k w (IfThen e1 e2)  
+eval k w (IfElse e1 e2)  
   | eval k w e1 = eval k w e2
   | otherwise = True
 
@@ -90,7 +99,33 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
-test 
+satEX e s 
+  = undefined
+satAF e s 
+  = undefined
+satEU e1 e2 s 
+  = undefined
+
+sat :: Exp -> [State] -> [State]
+sat (Constant True) s = s
+sat (Constant False) s = []
+sat (Variable p) s = undefined --TODO
+sat (Not e) s = (\\) s (sat e s)
+sat (And e1 e2) s = intersect (sat e1 s) (sat e2 s)
+sat (Or e1 e2) s = union (sat e1 s) (sat e2 s)
+sat (IfElse e1 e2) s = sat (Or (Not e1) e2) s
+sat (A (X e)) s = sat (Not (E (X (Not e)))) s
+sat (A (Until e1 e2)) s 
+  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s
+sat (E (F e)) s = sat (E (Until (Constant True) e)) s
+sat (E (G e)) s = sat (Not (A (F (Not e)))) s
+sat (A (G e)) s = sat (Not (E (F (Not e)))) s
+set (E (X e)) s = satEX e s
+set (A (F e)) s = satAF e s
+set (E (Until e1 e2)) s = satEU e1 e2 s
+
+---------------------------------------------------------------------
+runTests 
   = eval kripkeModel w4 exp1 == False &&
     eval kripkeModel w4 exp2 == True  &&
     eval kripkeModel w3 exp1 == False &&
