@@ -1,6 +1,6 @@
 # Haskell-Verifier
 
-A verifier for logical formulas.
+A model checker for temporal logic formulae.
 
 # Usage
 A toy example given a model and a formula:
