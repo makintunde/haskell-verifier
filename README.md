@@ -20,3 +20,11 @@ False
 
 The reason why the above example is "False" is because there exists w3 such that (w4, w3) is in our set of relations, 
 but (M, w3) isn't in our set of valuations for p.
+
+# Current Progress
+## Done
+* Kripke Models
+
+## In Progress
+* *CTL Models*
+* LTL Models
