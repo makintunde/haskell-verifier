@@ -99,44 +99,45 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
-satEX e s rs 
+satEX e s rs vs
   = nub [s' | (s', _) <- rs] 
     where 
-      x = sat e s
+      x = sat e s rs vs
 
-satAF' e s xs ys 
+satAF' e s xs ys vs
   = undefined
 -- | xs == ys = ys
 -- | otherwise 
 --   = union ys [s' | (s', s'') <- ]
 
-satAF e s rs 
+satAF e s rs vs 
   | x == y = y
-  | otherwise = satAF' e s x y
+  | otherwise = satAF' e s x y vs 
     where
       x = s
-      y = sat e s rs
+      y = sat e s rs vs
 
-satEU e1 e2 s rs
+satEU e1 e2 s rs vs
   = undefined
 
-sat :: Exp -> [State] -> Relations -> [State]
-sat (Constant True) s _ = s
-sat (Constant False) s _ = []
-sat (Variable p) s _ = undefined --TODO
-sat (Not e) s rs = (\\) s (sat e s rs)
-sat (And e1 e2) s rs = intersect (sat e1 s rs) (sat e2 s rs)
-sat (Or e1 e2) s rs = union (sat e1 s rs) (sat e2 s rs)
-sat (IfElse e1 e2) s rs = sat (Or (Not e1) e2) s rs
-sat (A (X e)) s rs = sat (Not (E (X (Not e)))) s rs
-sat (A (Until e1 e2)) s rs
-  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s rs
-sat (E (F e)) s rs = sat (E (Until (Constant True) e)) s rs
-sat (E (G e)) s rs = sat (Not (A (F (Not e)))) s rs
-sat (A (G e)) s rs = sat (Not (E (F (Not e)))) s rs
-sat (E (X e)) s rs = satEX e s rs
-sat (A (F e)) s rs = satAF e s rs
-sat (E (Until e1 e2)) s rs = satEU e1 e2 s rs
+-- TOOD: Have model M as a tuple (W, R, pi)
+sat :: Exp -> [State] -> Relations -> Valuations -> [State]
+sat (Constant True) s _ _ = s
+sat (Constant False) s _ _ = []
+sat (Variable p) s _ vs = [s' | s' <- lookUp p vs]
+sat (Not e) s rs vs = (\\) s (sat e s rs vs)
+sat (And e1 e2) s rs vs  = intersect (sat e1 s rs vs) (sat e2 s rs vs)
+sat (Or e1 e2) s rs vs = union (sat e1 s rs vs) (sat e2 s rs vs)
+sat (IfElse e1 e2) s rs vs = sat (Or (Not e1) e2) s rs vs
+sat (A (X e)) s rs vs = sat (Not (E (X (Not e)))) s rs vs
+sat (A (Until e1 e2)) s rs vs
+  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s rs vs
+sat (E (F e)) s rs vs = sat (E (Until (Constant True) e)) s rs vs
+sat (E (G e)) s rs vs = sat (Not (A (F (Not e)))) s rs vs
+sat (A (G e)) s rs vs = sat (Not (E (F (Not e)))) s rs vs
+sat (E (X e)) s rs vs = satEX e s rs vs
+sat (A (F e)) s rs vs = satAF e s rs vs
+sat (E (Until e1 e2)) s rs vs = satEU e1 e2 s rs vs
 
 ---------------------------------------------------------------------
 runTests 
