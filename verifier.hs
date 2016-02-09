@@ -13,6 +13,8 @@ type KripkeFrame = ([World], Relations)
 
 type KripkeModel = (KripkeFrame, Valuations) 
 
+type CtlModel = ([State], Relations, Valuations)
+
 data Exp = Constant Bool 
          | Variable String 
          | Not Exp 
@@ -99,10 +101,11 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
-satEX e s rs vs
+satEX e m
   = nub [s' | (s', _) <- rs] 
     where 
-      x = sat e s rs vs
+      x = sat e m
+      (s, rs, vs) = m
 
 satAF' e s xs ys vs
   = undefined
@@ -110,34 +113,35 @@ satAF' e s xs ys vs
 -- | otherwise 
 --   = union ys [s' | (s', s'') <- ]
 
-satAF e s rs vs 
+satAF e m 
   | x == y = y
   | otherwise = satAF' e s x y vs 
     where
       x = s
-      y = sat e s rs vs
+      y = sat e m
+      (s, rs, vs) = m
 
-satEU e1 e2 s rs vs
+satEU e1 e2 m
   = undefined
 
 -- TOOD: Have model M as a tuple (W, R, pi)
-sat :: Exp -> [State] -> Relations -> Valuations -> [State]
-sat (Constant True) s _ _ = s
-sat (Constant False) s _ _ = []
-sat (Variable p) s _ vs = [s' | s' <- lookUp p vs]
-sat (Not e) s rs vs = (\\) s (sat e s rs vs)
-sat (And e1 e2) s rs vs  = intersect (sat e1 s rs vs) (sat e2 s rs vs)
-sat (Or e1 e2) s rs vs = union (sat e1 s rs vs) (sat e2 s rs vs)
-sat (IfElse e1 e2) s rs vs = sat (Or (Not e1) e2) s rs vs
-sat (A (X e)) s rs vs = sat (Not (E (X (Not e)))) s rs vs
-sat (A (Until e1 e2)) s rs vs
-  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) s rs vs
-sat (E (F e)) s rs vs = sat (E (Until (Constant True) e)) s rs vs
-sat (E (G e)) s rs vs = sat (Not (A (F (Not e)))) s rs vs
-sat (A (G e)) s rs vs = sat (Not (E (F (Not e)))) s rs vs
-sat (E (X e)) s rs vs = satEX e s rs vs
-sat (A (F e)) s rs vs = satAF e s rs vs
-sat (E (Until e1 e2)) s rs vs = satEU e1 e2 s rs vs
+sat :: Exp -> CtlModel -> [State]
+sat (Constant True) (s, _, _) = s
+sat (Constant False) _ = []
+sat (Variable p) (s, _, vs) = [s' | s' <- lookUp p vs]
+sat (Not e) (s, rs, vs) = (\\) s (sat e (s, rs, vs))
+sat (And e1 e2) m  = intersect (sat e1 m) (sat e2 m)
+sat (Or e1 e2) m = union (sat e1 m) (sat e2 m)
+sat (IfElse e1 e2) m = sat (Or (Not e1) e2) m
+sat (A (X e)) m = sat (Not (E (X (Not e)))) m
+sat (A (Until e1 e2)) m
+  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) m
+sat (E (F e)) m = sat (E (Until (Constant True) e)) m
+sat (E (G e)) m = sat (Not (A (F (Not e)))) m
+sat (A (G e)) m = sat (Not (E (F (Not e)))) m
+sat (E (X e)) m = satEX e m
+sat (A (F e)) m = satAF e m
+sat (E (Until e1 e2)) m = satEU e1 e2 m
 
 ---------------------------------------------------------------------
 runTests 
