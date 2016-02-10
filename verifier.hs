@@ -123,18 +123,31 @@ satAF e m
       y = sat e m
       (s, rs, vs) = m
 
-satEU' x y w
-  = undefined
+getStates :: Relations -> [State] -> [State]
+getStates ((s,s'):ss) y
+  | elem s' y = s : (getStates ss y)
+  | otherwise = getStates ss y
+
+
+satEU' :: [State] -> [State] -> [State] -> CtlModel -> [State]
+satEU' x y w m
+  | x == y = y
+  | otherwise = satEU' x' y' w m
+    where
+      x' = y
+      y' = union y (intersect w (nub (getStates rs y)))
+      (_, rs, _) = m
 
 -- Determines the states satisfying E[e1 U e2].
-satEU e1 e2 m
+satEU :: Exp -> Exp -> CtlModel -> [State]
+satEU e1 e2 m 
   | x == y = y
-  | otherwise = satEU' x y w
+  | otherwise = satEU' x y w m
     where
       w = sat e1 m
       x = s
       y = sat e2 m
-      (s, rs, vs) = m
+      (s, _, _) = m
 
 sat :: Exp -> CtlModel -> [State]
 sat (Constant True) (s, _, _) = s
