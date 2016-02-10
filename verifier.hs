@@ -101,6 +101,7 @@ relatedTo w ((w', w''):ws)
   | w == w' = w'' : relatedTo w ws
   | otherwise = relatedTo w ws
 
+-- Determines the set of states satisfying EX e.
 satEX e m
   = nub [s' | (s', _) <- rs] 
     where 
@@ -113,6 +114,7 @@ satAF' e s xs ys vs
 -- | otherwise 
 --   = union ys [s' | (s', s'') <- ]
 
+-- Determines the set of states satisfying AF e.
 satAF e m 
   | x == y = y
   | otherwise = satAF' e s x y vs 
@@ -121,10 +123,19 @@ satAF e m
       y = sat e m
       (s, rs, vs) = m
 
-satEU e1 e2 m
+satEU' x y w
   = undefined
 
--- TOOD: Have model M as a tuple (W, R, pi)
+-- Determines the states satisfying E[e1 U e2].
+satEU e1 e2 m
+  | x == y = y
+  | otherwise = satEU' x y w
+    where
+      w = sat e1 m
+      x = s
+      y = sat e2 m
+      (s, rs, vs) = m
+
 sat :: Exp -> CtlModel -> [State]
 sat (Constant True) (s, _, _) = s
 sat (Constant False) _ = []
