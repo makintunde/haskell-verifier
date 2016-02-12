@@ -108,20 +108,43 @@ satEX e m
       x = sat e m
       (s, rs, vs) = m
 
-satAF' e s xs ys vs
-  = undefined
+-- Builds a map from a state to all states it is related to.
+buildRelationMap :: [(State, State)] -> [(State, [State])]
+buildRelationMap rs
+  = []
+
+getStatesAll' :: [(State, [State])] -> [State] -> [State]
+getStatesAll' ((k,vs):rest) y
+  | and (map f vs) = k : getStatesAll' rest y
+  | otherwise = getStatesAll' rest y
+    where 
+      f v = elem v y
+
+getStatesAll :: Relations -> [State] -> [State]
+getStatesAll rs y
+  = getStatesAll' values y
+    where 
+      values = buildRelationMap rs
+
+satAF' :: [State] -> [State] -> Relations -> [State]
+satAF' x y rs
+  | x == y = y
+  | otherwise = satAF' x' y' rs
+    where 
+      x' = y
+      y' = union y (getStatesAll rs y) 
 -- | xs == ys = ys
 -- | otherwise 
 --   = union ys [s' | (s', s'') <- ]
 
 -- Determines the set of states satisfying AF e.
+satAF :: Exp -> CtlModel -> [State]
 satAF e m 
-  | x == y = y
-  | otherwise = satAF' e s x y vs 
+  = satAF' x y rs 
     where
       x = s
-      y = sat e m
-      (s, rs, vs) = m
+      y = sat e m 
+      (s, rs, _) = m
 
 getStates :: Relations -> [State] -> [State]
 getStates ((s,s'):ss) y
@@ -141,8 +164,7 @@ satEU' x y w m
 -- Determines the states satisfying E[e1 U e2].
 satEU :: Exp -> Exp -> CtlModel -> [State]
 satEU e1 e2 m 
-  | x == y = y
-  | otherwise = satEU' x y w m
+  = satEU' x y w m
     where
       w = sat e1 m
       x = s
