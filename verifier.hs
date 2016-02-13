@@ -109,9 +109,14 @@ satEX e m
       (s, rs, vs) = m
 
 -- Builds a map from a state to all states it is related to.
-buildRelationMap :: [(State, State)] -> [(State, [State])]
-buildRelationMap rs
-  = []
+buildRelationMap :: [(State, State)] -> [(State, [State])] -> [(State, [State])]
+buildRelationMap [] m
+  = m
+buildRelationMap ((k,v):rs) [] 
+  = buildRelationMap rs [(k,[v])] 
+buildRelationMap ((k,v):rs) ((k',vs):rs')
+  | k == k' = buildRelationMap rs ((k,(v:vs)):rs')
+  | otherwise = buildRelationMap rs ((k,[v]):(k',vs):rs') 
 
 getStatesAll' :: [(State, [State])] -> [State] -> [State]
 getStatesAll' ((k,vs):rest) y
@@ -124,7 +129,7 @@ getStatesAll :: Relations -> [State] -> [State]
 getStatesAll rs y
   = getStatesAll' values y
     where 
-      values = buildRelationMap rs
+      values = buildRelationMap rs []
 
 satAF' :: [State] -> [State] -> Relations -> [State]
 satAF' x y rs
