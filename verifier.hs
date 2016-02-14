@@ -31,6 +31,10 @@ data Exp = Constant Bool
          | E Exp
          deriving (Show, Eq)
 
+ctlModel = (["s0","s1","s2","s3"],
+            [("s0","s3"),("s0","s1"),("s1","s1"),("s1","s2"),("s2","s0"),("s2","s3"),("s3","s0")],
+            [("p",["s0","s2"]),("q",["s0","s3"]),("r",["s3","s1"]),("t",["s2"])])
+
 relations = [("w2", "w1"), 
              ("w3", "w2"), 
              ("w4", "w2"), 
@@ -119,6 +123,7 @@ buildRelationMap ((k,v):rs) ((k',vs):rs')
   | otherwise = buildRelationMap rs ((k,[v]):(k',vs):rs') 
 
 getStatesAll' :: [(State, [State])] -> [State] -> [State]
+getStatesAll' [] y = []
 getStatesAll' ((k,vs):rest) y
   | and (map f vs) = k : getStatesAll' rest y
   | otherwise = getStatesAll' rest y
