@@ -2,7 +2,7 @@
 
 A model checker for temporal logic formulae. Currently supports Kripke models and CTL formulae.
 
-# Usage
+## Usage
 A toy example given a model and a formula:
 ```
 ghci verifier.hs
@@ -35,12 +35,12 @@ but (M, w3) isn't in our set of valuations for p.
 
 The second example produces the set of states which satisfy the given CTL formula in the specified model (consisting of some states, relations and valuations).
 
-# Current Progress
-## Done
+## Current Progress
+### Done
 * Kripke Models
 * CTL Formulae
 
-## In Progress
+### In Progress
 * LTL Formulae
 
 ## Requirements
