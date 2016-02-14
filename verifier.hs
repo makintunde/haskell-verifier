@@ -63,6 +63,12 @@ exp4 = Box (Constant False)
 exp5 = Diamond (Constant False)
 exp6 = And (Box (Constant True)) (Box (Constant False))
 exp7 = Or (Diamond (Constant True)) (Diamond (Constant False))
+ctlExp1 = A (F (Variable "q"))
+ctlExp2 = A (G (E (F (Or (Variable "p") (Variable "q")))))
+ctlExp3 = E (X (E (X (Variable "r"))))
+ctlExp4 = A (G (A (F (Variable "q"))))
+ctlExp5 = E (Until (Variable "p") (Not (A (F (Variable "q")))))
+
 
 w1 = "w1"
 w2 = "w2"
@@ -123,7 +129,7 @@ buildRelationMap ((k,v):rs) ((k',vs):rs')
   | otherwise = buildRelationMap rs ((k,[v]):(k',vs):rs') 
 
 getStatesAll' :: [(State, [State])] -> [State] -> [State]
-getStatesAll' [] y = []
+getStatesAll' [] _ = []
 getStatesAll' ((k,vs):rest) y
   | and (map f vs) = k : getStatesAll' rest y
   | otherwise = getStatesAll' rest y
@@ -157,6 +163,7 @@ satAF e m
       (s, rs, _) = m
 
 getStates :: Relations -> [State] -> [State]
+getStates [] _ = []
 getStates ((s,s'):ss) y
   | elem s' y = s : (getStates ss y)
   | otherwise = getStates ss y
@@ -208,4 +215,13 @@ runTests
     eval kripkeModel w2 exp4 == False &&
     eval kripkeModel w2 exp5 == False &&
     eval kripkeModel w1 exp6 == True  &&
-    eval kripkeModel w2 exp7 == True      
+    eval kripkeModel w2 exp7 == True     
+
+runSatTests
+  = sort (sat ctlExp1 ctlModel) == ["s0","s2","s3"] &&
+    sort (sat ctlExp2 ctlModel) == ["s0","s1","s2","s3"] &&
+    sort (sat ctlExp3 ctlModel) == ["s0","s1","s2","s3"] &&
+    sort (sat ctlExp4 ctlModel) == [] &&
+    sort (sat ctlExp5 ctlModel) == ["s0", "s1", "s2"]
+    
+
