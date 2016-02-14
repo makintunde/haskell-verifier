@@ -1,6 +1,6 @@
 # Haskell-Verifier
 
-A model checker for temporal logic formulae. Currently Supports Kripke models and CTL formulae.
+A model checker for temporal logic formulae. Currently supports Kripke models and CTL formulae.
 
 # Usage
 A toy example given a model and a formula:
