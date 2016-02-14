@@ -23,8 +23,9 @@ False
 > let states = ["s0","s1","s2","s3"]
 > let relations = [("s0","s3"),("s0","s1"),("s1","s1"),("s1","s2"),("s2","s0"),("s2","s3"),("s3","s0")]
 > let valuations = [("p",["s0","s2"]),("q",["s0","s3"]),("r",["s3","s1"]),("t",["s2"])]
+> let ctlModel = (states, relations, valuations)
 
-> sat ctlExp5 ctlModel
+> sat ctlExp ctlModel
 
 ["s1","s0","s2"]
 ```
