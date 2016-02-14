@@ -208,7 +208,7 @@ sat (A (F e)) m = satAF e m
 sat (E (Until e1 e2)) m = satEU e1 e2 m
 
 ---------------------------------------------------------------------
-runTests 
+runKripkeTests 
   = eval kripkeModel w4 exp1 == False &&
     eval kripkeModel w4 exp2 == True  &&
     eval kripkeModel w3 exp1 == False &&
@@ -225,4 +225,5 @@ runSatTests
     sort (sat ctlExp4 ctlModel) == [] &&
     sort (sat ctlExp5 ctlModel) == ["s0", "s1", "s2"]
     
-
+runAllTests
+  = runKripkeTests && runSatTests
