@@ -15,6 +15,7 @@ type KripkeModel = (KripkeFrame, Valuations)
 
 type CtlModel = ([State], Relations, Valuations)
 
+-- TODO: Weak Until.
 data Exp = Constant Bool 
          | Variable String 
          | Not Exp 
