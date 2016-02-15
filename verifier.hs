@@ -64,11 +64,11 @@ exp4 = Box (Constant False)
 exp5 = Diamond (Constant False)
 exp6 = And (Box (Constant True)) (Box (Constant False))
 exp7 = Or (Diamond (Constant True)) (Diamond (Constant False))
-ctlExp1 = A (F (Variable "q"))
-ctlExp2 = A (G (E (F (Or (Variable "p") (Variable "q")))))
-ctlExp3 = E (X (E (X (Variable "r"))))
-ctlExp4 = A (G (A (F (Variable "q"))))
-ctlExp5 = E (Until (Variable "p") (Not (A (F (Variable "q")))))
+ctlExp1 = (A . F) (Variable "q")
+ctlExp2 = (A . G . E . F ) (Or (Variable "p") (Variable "q"))
+ctlExp3 = (E . X . E . X) (Variable "r")
+ctlExp4 = (A . G . A . F) (Variable "q")
+ctlExp5 = E (Until (Variable "p") ((Not . A . F) (Variable "q")))
 
 
 w1 = "w1"
@@ -197,12 +197,12 @@ sat (Not e) (s, rs, vs) = (\\) s (sat e (s, rs, vs))
 sat (And e1 e2) m  = intersect (sat e1 m) (sat e2 m)
 sat (Or e1 e2) m = union (sat e1 m) (sat e2 m)
 sat (IfElse e1 e2) m = sat (Or (Not e1) e2) m
-sat (A (X e)) m = sat (Not (E (X (Not e)))) m
+sat (A (X e)) m = sat ((Not . E . X . Not) e) m
 sat (A (Until e1 e2)) m
-  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) (E (G (Not e2))))) m
+  = sat (Not (Or (E ( Until (Not e2) (And (Not e1) (Not e2)))) ((E . G . Not) e2))) m
 sat (E (F e)) m = sat (E (Until (Constant True) e)) m
-sat (E (G e)) m = sat (Not (A (F (Not e)))) m
-sat (A (G e)) m = sat (Not (E (F (Not e)))) m
+sat (E (G e)) m = sat ((Not . A . F) (Not e)) m
+sat (A (G e)) m = sat ((Not . E . F) (Not e)) m
 sat (E (X e)) m = satEX e m
 sat (A (F e)) m = satAF e m
 sat (E (Until e1 e2)) m = satEU e1 e2 m
