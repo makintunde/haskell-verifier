@@ -150,9 +150,6 @@ satAF' x y rs
     where 
       x' = y
       y' = union y (getStatesAll rs y) 
--- | xs == ys = ys
--- | otherwise 
---   = union ys [s' | (s', s'') <- ]
 
 -- Determines the set of states satisfying AF e.
 satAF :: Exp -> CtlModel -> [State]
