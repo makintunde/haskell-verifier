@@ -4,7 +4,7 @@ A model checker for temporal logic formulae. Currently supports Kripke models an
 
 ## Usage
 A toy example given a model and a formula:
-```
+```haskell
 ghci verifier.hs
 
 > let relations = [("w2", "w1"), ("w3", "w2"), ("w4", "w2"), ("w4", "w3"), ("w3", "w3")]
@@ -42,6 +42,7 @@ The second example produces the set of states which satisfy the given CTL formul
 
 ### In Progress
 * LTL Formulae
+* Epistemic Modalities
 
 ## Requirements
 The Glorious Glasgow Haskell Compilation System - version 7.6.3 or later.
