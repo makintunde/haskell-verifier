@@ -31,7 +31,7 @@ data Exp = Constant Bool
          | F Exp
          | X Exp
          | E Exp
-         deriving (Show, Eq)
+         deriving (Show, Eq, Read)
 
 --data LtlKExp = Variable String
 --             | Not LtlKExp
@@ -227,10 +227,13 @@ printRelation relation = do
 printPi (p, vs) = do
   putStrLn $ "pi(" ++ p ++ ") = { " ++ unwords vs ++ " }"
 
+  
+
 doCtl = do
   putStrLn "Enter the set of states in the form 's0 s1 s2 ...' :"
-  states <- getLine
-  relations <- forM (words states) (\state -> do
+  statesStr <- getLine
+  let states = words statesStr
+  relations <- forM states (\state -> do
     putStrLn $ "What is " ++ state ++ " related to?"
     relatedTo <- getLine
     return (map (\x -> (state, x)) (words relatedTo)) )
@@ -245,8 +248,10 @@ doCtl = do
   putStrLn "pi is defined as: "
   mapM printPi valuations
   -- TODO
-  -- putStrLn "Enter the formula to evaluate: "
-  return ()
+  putStrLn "Enter the formula to evaluate: "
+  expStr <- getLine
+  putStrLn $ "The set of states on which the formula is satisfied are:"
+  putStrLn $ unwords $ sat (read expStr :: Exp) (states, concat relations, valuations)
 
 doKripke = do
   putStrLn "TODO: Kripke I/O"
