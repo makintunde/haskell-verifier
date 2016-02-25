@@ -1,5 +1,6 @@
 import Data.Maybe
 import Data.List
+import Control.Monad
 
 type World = [Char] 
 
@@ -32,6 +33,16 @@ data Exp = Constant Bool
          | E Exp
          deriving (Show, Eq)
 
+--data LtlKExp = Variable String
+--             | Not LtlKExp
+--             | And LtlKExp LtlKExp
+--             | X LtlKExp
+--             | U LtlKExp LtlKExp
+--             | K tlKExp
+--             | E LtlKExp
+--             | D LtlKExp
+--             | C LtlKExp
+
 ctlModel = (["s0","s1","s2","s3"],
             [("s0","s3"),("s0","s1"),("s1","s1"),("s1","s2"),("s2","s0"),("s2","s3"),("s3","s0")],
             [("p",["s0","s2"]),("q",["s0","s3"]),("r",["s3","s1"]),("t",["s2"])])
@@ -41,6 +52,12 @@ relations = [("w2", "w1"),
              ("w4", "w2"), 
              ("w4", "w3"), 
              ("w3", "w3")]
+
+q1relations = [("s0","s0"),("s0","s1"),("s0","s3"),("s1","s2"),("s2","s1"),("s3","s2")]
+
+q1valuations = [("p",["s1","s3"]),("q",["s2","s3"]),("r",["s0","s1","s2"]),("t",["s1"])]
+
+q1world = ["s0","s1","s2","s3"]
 
 worlds = ["w1", "w2", "w3", "w4"]
 
@@ -203,6 +220,47 @@ sat (A (G e)) m = sat ((Not . E . F) (Not e)) m
 sat (E (X e)) m = satEX e m
 sat (A (F e)) m = satAF e m
 sat (E (Until e1 e2)) m = satEU e1 e2 m
+
+printRelation relation = do
+  putStrLn $ fst relation ++ " -> " ++ snd relation
+
+printPi (p, vs) = do
+  putStrLn $ "pi(" ++ p ++ ") = { " ++ unwords vs ++ " }"
+
+doCtl = do
+  putStrLn "Enter the set of states in the form 's0 s1 s2 ...' :"
+  states <- getLine
+  relations <- forM (words states) (\state -> do
+    putStrLn $ "What is " ++ state ++ " related to?"
+    relatedTo <- getLine
+    return (map (\x -> (state, x)) (words relatedTo)) )
+  putStrLn "The relations are: "
+  mapM printRelation $ concat relations
+  putStrLn "Enter the set of atoms in the form 'p q r ...' :"
+  atoms <- getLine
+  valuations <- forM (words atoms) (\atom -> do
+    putStrLn $ "At which states are " ++ atom ++ " true?"
+    valuation <- getLine
+    return (atom, words valuation))
+  putStrLn "pi is defined as: "
+  mapM printPi valuations
+  -- TODO
+  -- putStrLn "Enter the formula to evaluate: "
+  return ()
+
+doKripke = do
+  putStrLn "TODO: Kripke I/O"
+
+main = do
+  putStrLn "Enter an integer to choose the desired mode."
+  putStrLn "---------------------"
+  putStrLn "  (1) Kripke Models"
+  putStrLn "  (2) CTL"
+  putStrLn "---------------------"
+  option <- getLine
+  if option == "1"
+    then doKripke
+    else doCtl
 
 ---------------------------------------------------------------------
 runKripkeTests 
