@@ -33,6 +33,7 @@ data Exp = Constant Bool
          | E Exp
          deriving (Show, Eq, Read)
 
+-- TODO: Epistemic Modalities
 --data LtlKExp = Variable String
 --             | Not LtlKExp
 --             | And LtlKExp LtlKExp
@@ -227,8 +228,6 @@ printRelation relation = do
 printPi (p, vs) = do
   putStrLn $ "pi(" ++ p ++ ") = { " ++ unwords vs ++ " }"
 
-  
-
 doCtl = do
   putStrLn "Enter the set of states in the form 's0 s1 s2 ...' :"
   statesStr <- getLine
@@ -247,7 +246,6 @@ doCtl = do
     return (atom, words valuation))
   putStrLn "pi is defined as: "
   mapM printPi valuations
-  -- TODO
   putStrLn "Enter the formula to evaluate: "
   expStr <- getLine
   putStrLn $ "The set of states on which the formula is satisfied are:"
