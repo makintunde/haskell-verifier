@@ -3,10 +3,14 @@
 A model checker for temporal logic formulae. Currently supports Kripke models and CTL formulae.
 
 ## Usage
-A toy example given a model and a formula:
-```haskell
-ghci verifier.hs
 
+### Interactive mode
+Verifier can be ran interactively within `ghci`, with example usage as follows:
+```
+ghci verifier.hs
+```
+
+```haskell
 > let relations = [("w2", "w1"), ("w3", "w2"), ("w4", "w2"), ("w4", "w3"), ("w3", "w3")]
 > let worlds = ["w1", "w2", "w3", "w4"]
 > let valuations = [("p", ["w2", "w4"]), ("q", ["w2", "w3", "w4"])]
@@ -35,6 +39,17 @@ but (M, w3) isn't in our set of valuations for p.
 
 The second example produces the set of states which satisfy the given CTL formula in the specified model (consisting of some states, relations and valuations).
 
+### Standalone Mode (In Progress)
+To compile, run:
+``` 
+ghc --make verifier
+```
+
+To run as a standalone program (in progress), run:
+```
+./verifier
+```
+
 ## Current Progress
 ### Done
 * Kripke Models
@@ -43,6 +58,7 @@ The second example produces the set of states which satisfy the given CTL formul
 ### In Progress
 * LTL Formulae
 * Epistemic Modalities
+* A front-end
 
 ## Requirements
 The Glorious Glasgow Haskell Compilation System - version 7.6.3 or later.
