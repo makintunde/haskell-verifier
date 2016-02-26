@@ -265,6 +265,23 @@ main = do
     then doKripke
     else doCtl
 
+showExp :: Exp -> String
+showExp (Variable p) = p
+showExp (Constant c) = show c
+showExp (A e) = "A ( " ++ showExp(e) ++ ")"
+showExp (G e) = "G ( " ++ showExp(e) ++ ")"
+showExp (F e) = "F ( " ++ showExp(e) ++ ")"
+showExp (X e) = "X ( " ++ showExp(e) ++ ")"
+showExp (E e) = "E ( " ++ showExp(e) ++ ")"
+showExp (Not e) = "Not (" ++ showExp(e) ++ ")"
+showExp (Diamond e) = "<> (" ++ showExp(e) ++ ")"
+showExp (Box e) = "[] (" ++ showExp(e) ++ ")"
+showExp (And e1 e2) = "(" ++ showExp(e1) ++ ") And (" ++ showExp(e2) ++ ")"
+showExp (Or e1 e2) = "(" ++ showExp(e1) ++ ") Or (" ++ showExp(e2) ++ ")"
+showExp (Until e1 e2) = "(" ++ showExp(e1) ++ ") Until (" ++ showExp(e2) ++ ")"
+showExp (IfElse e1 e2) = "(" ++ showExp(e1) ++ ") -> (" ++ showExp(e2) ++ ")"
+
+
 ---------------------------------------------------------------------
 runKripkeTests 
   = eval kripkeModel w4 exp1 == False &&
