@@ -50,6 +50,72 @@ To run as a standalone program (in progress), run:
 ./verifier
 ```
 
+You are then displayed several prompts to input the relevant information
+for your model and formula. 
+
+```
+Enter an integer to choose the desired mode.
+---------------------
+  (1) Kripke Models
+  (2) CTL
+---------------------
+2
+
+Enter the set of states in the form 's0 s1 s2 ...' :
+s0 s1 s2 s3
+
+What is s0 related to?
+s1 s3
+
+What is s1 related to?
+s1 s2
+
+What is s2 related to?
+s0 s3
+
+What is s3 related to?
+s0 
+
+The relations are: 
+s0 -> s1
+s0 -> s3
+s1 -> s1
+s1 -> s2
+s2 -> s0
+s2 -> s3
+s3 -> s0
+
+Enter the set of atoms in the form 'p q r ...' :
+p q r t
+
+At which states are p true?
+s0 s2
+
+At which states are q true?
+s0 s3
+
+At which states are r true?
+s1 s3
+
+At which states are t true?
+s2
+
+pi is defined as: 
+pi(p) = { s0 s2 }
+pi(q) = { s0 s3 }
+pi(r) = { s1 s3 }
+pi(t) = { s2 }
+
+Enter the formula to evaluate: 
+E ( Until ( Variable "p" ) ( Not ( A ( F ( Variable "q" ) ) ) ) )
+```
+```
+The set of states on which the formula is satisfied are:
+s1 s0 s2
+```
+
+
+
 ## Current Progress
 ### Done
 * Kripke Models
